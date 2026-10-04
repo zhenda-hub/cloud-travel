@@ -73,9 +73,9 @@ https://github.com/huangbai-AI/yingxian-pagoda
 
 ## 三、方案：Blender + Python 参数化重建天坛
 
-**把"代码版"从 three.js 搬到 Blender。**
+**three.js 程序化版已试过并删除（见 §七），改走 Blender。**
 
-| | 现在的代码版（three.js） | 应走的路线（Blender） |
+| | 已弃用的代码版（three.js） | 应走的路线（Blender） |
 |---|---|---|
 | 在哪建 | 浏览器里跑 | 离线跑 |
 | 怎么建 | JS 手写几何 | **Python 脚本参数化** |
@@ -166,26 +166,22 @@ https://github.com/huangbai-AI/yingxian-pagoda
 | 文件 | 内容 |
 |---|---|
 | `index.html` | 首页 |
-| `3d.html` | 3D 云游 —— **5 个标签**：天坛Turbo / 日月潭 / Pixal3D / Lux3D G1 / TRELLIS.2 |
-| `3d-code.html` | 代码版天坛（three.js 程序化 + 3 个 GLSL shader 可开关） |
+| `3d.html` | 3D 云游 —— **2 个标签**：天坛祈年殿（Lux3D G1）/ 日月潭 |
 
-### 模型（5 个，共约 107 MB）
+### 模型（2 个，共约 40 MB）
 | 文件 | 体积 | 评价 |
 |---|---|---|
-| `temple-lux3d-g1.glb` | 20.0 MB | **目前结构最好**（299,051 面） |
-| `temple-pixal3d.glb` | 19.3 MB | 底座完整，但整体模糊（148,397 面） |
-| `temple-trellis2.glb` | 24.4 MB | 底座完整，偏暗（149,341 面） |
-| `temple_of_heaven.glb` | 22.9 MB | 旧 Turbo 版，底座歪（280,705 面） |
+| `temple-lux3d-g1.glb` | 20.0 MB | 天坛祈年殿。**目前结构最好**（299,051 面） |
 | `sun-moon-lake.glb` | 20.3 MB | 日月潭 |
 
+2026-10-05 删除的对比模型（已归档到仓库外 `C:\Users\zzd\lux3d-output\removed-20261005\`）：
+`temple_of_heaven.glb` / `temple-pixal3d.glb` / `temple-pixal3d-level.glb` /
+`temple-trellis2.glb` / `temple-trellis2-level.glb`
+→ AI 图生 3D 结构达不到目标，不在站点保留。
+
 ### git
-**未提交**，7 项变更：
-```
- M 3d.html
-?? 3d-code.html  js/temple-code.js  js/temple-shaders.js
-?? assets/models/temple-lux3d-g1.glb  temple-pixal3d.glb  temple-trellis2.glb
-```
-线上 GitHub Pages 仍是旧版。
+**已提交** `efe3acf`（天坛模型改用 Lux3D G1 版，模型精简为 2 个），工作区干净。
+⚠️ **尚未 push** —— 线上 GitHub Pages 仍是旧版。
 
 ### 本地服务
 - `http://127.0.0.1:8765/` —— 云旅游静态站（`python -m http.server`）
@@ -220,7 +216,7 @@ BiRefNet 把**汉白玉台基当"地面/背景"删掉**（试了 3 次，紧裁�
 
 ### ④ `python -m http.server` 不发缓存头 → 改了看不到
 响应头只有 `Last-Modified`，没有 `Cache-Control`/`ETag` → 浏览器长期复用旧 JS。
-**解法：给资源 URL 加版本号**（已加 `?v=20261004b` 到 `3d.html`/`3d-code.html`/`temple-code.js`）。
+**解法：给资源 URL 加版本号**（现为 `?v=20261004d`，在 `3d.html` 的 css/js 引用上）。
 HTML 本身也需**硬刷新一次**（`Ctrl+Shift+R`）或带 `?fresh=1` 打开。
 
 ### ⑤ Blender headless 使用要点
@@ -244,6 +240,7 @@ BL="C:/Program Files/Blender Foundation/Blender 5.2/blender.exe"
 - ❌ **不追求电影感**（GTAO/景深/glow/滚动分镜）—— 用户明确说不需要
 - ❌ **不再折腾 AI 图生 3D 的结构**（已到天花板）
 - ❌ **Hunyuan3D 与高斯泼溅**（已弃用并清理）
+- ❌ **three.js 程序化代码版**（`3d-code.html` + `js/temple-code.js` + `js/temple-shaders.js`，2026-10-05 删除）
 - ❌ **不碰 git 写操作**（除非用户明确说"提交"）
 
 ---
