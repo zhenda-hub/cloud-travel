@@ -331,7 +331,7 @@ if (stage) {
 
   /* ---------- 启动 ---------- */
   const first = tabs.find((t) => t.classList.contains('active')) || tabs[0];
-  loadModel(first ? first.dataset.model : 'assets/models/temple_of_heaven.glb');
+  loadModel(first ? first.dataset.model : 'assets/models/temple-lux3d-g1.glb');
 
   renderer.setAnimationLoop(() => {
     controls.update();
