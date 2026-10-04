@@ -39,10 +39,8 @@
   min-height: 420px;
   border-radius: 22px;
   overflow: hidden;
-  background:
-    radial-gradient(120% 80% at 50% 100%, rgba(255,255,255,.9), rgba(255,255,255,0) 60%),
-    linear-gradient(180deg, #d8ecff 0%, #eaf5ff 55%, #fbfdff 100%);
-  box-shadow: 0 26px 60px -30px rgba(15,40,80,.45), inset 0 0 0 1px rgba(255,255,255,.7);
+  background: radial-gradient(120% 92% at 50% 106%, #213044 0%, #0f1620 54%, #0a0d12 100%);
+  box-shadow: 0 30px 70px -32px rgba(6,12,22,.78), inset 0 0 0 1px rgba(140,175,215,.14);
   touch-action: none;
 }
 .stage canvas { display: block; width: 100%; height: 100%; }
@@ -52,24 +50,24 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 15px; text-align: center; padding: 24px;
 }
-.vloading { color: var(--blue-deep); letter-spacing: .06em; transition: opacity .5s; }
+.vloading { color: #8fb8e8; letter-spacing: .06em; transition: opacity .5s; }
 .vloading.hide { opacity: 0; pointer-events: none; }
-.verr { display: none; color: #c0392b; white-space: pre-line; background: rgba(255,255,255,.9); }
+.verr { display: none; color: #ff9a8a; white-space: pre-line; background: rgba(12,16,22,.92); }
 
 /* ===== HUD ===== */
 .vhud {
   position: absolute; top: 16px; left: 16px; z-index: 6;
-  background: rgba(255,255,255,.78);
-  backdrop-filter: blur(10px);
+  background: rgba(15,21,29,.74);
+  backdrop-filter: blur(12px);
   border-radius: 14px;
   padding: 14px 16px;
-  font-size: 13px; line-height: 1.75; color: var(--ink-2);
-  box-shadow: 0 8px 24px -14px rgba(15,40,80,.4), inset 0 0 0 1px rgba(255,255,255,.8);
+  font-size: 13px; line-height: 1.75; color: #b9c9da;
+  box-shadow: 0 10px 28px -16px rgba(0,0,0,.8), inset 0 0 0 1px rgba(150,185,225,.16);
   pointer-events: none;
 }
-.vhud-title { font-weight: 700; color: var(--blue-deep); margin-bottom: 6px; }
-.vhud-row b { color: var(--blue); font-weight: 700; }
-.vhud-meta { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.vhud-title { font-weight: 700; color: #9cc8ff; margin-bottom: 6px; }
+.vhud-row b { color: #7fb3ff; font-weight: 700; }
+.vhud-meta { margin-top: 8px; font-size: 12px; color: #7d8fa3; }
 
 /* ===== 控制按钮 ===== */
 .vctrl {
@@ -77,14 +75,14 @@
   display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
 }
 .vctrl button {
-  border: 1px solid rgba(20,50,90,.12);
-  background: rgba(255,255,255,.85);
-  backdrop-filter: blur(10px);
-  color: var(--ink-2); font-size: 13px; font-weight: 600;
+  border: 1px solid rgba(150,185,225,.20);
+  background: rgba(15,21,29,.80);
+  backdrop-filter: blur(12px);
+  color: #b9c9da; font-size: 13px; font-weight: 600;
   padding: 9px 16px; border-radius: 999px; cursor: pointer;
   transition: all .16s;
 }
-.vctrl button:hover { border-color: var(--blue); color: var(--blue-deep); }
+.vctrl button:hover { border-color: #7fb3ff; color: #cfe2ff; }
 .vctrl button.on { background: var(--blue); border-color: var(--blue); color: #fff; }
 
 /* ===== 说明 ===== */
