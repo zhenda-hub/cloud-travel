@@ -1,26 +1,20 @@
-/* 云旅游 · 3D 云游查看器
+/* 云旅游 · 3D 云游查看器（支持多模型切换）
  * three.js 本地内置（./assets/vendor/three/），无 CDN 依赖。
  */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const MODEL_URL = 'assets/models/temple_of_heaven.glb';
-
 const stage = document.getElementById('stage');
 const loadingEl = document.getElementById('loading');
 const errEl = document.getElementById('err');
 const metaEl = document.getElementById('meta');
+const titleEl = document.getElementById('modelTitle');
+const subEl = document.getElementById('modelSub');
+const hudTitleEl = document.getElementById('hudTitle');
 
-function fail(msg) {
-  if (errEl) { errEl.style.display = 'flex'; errEl.textContent = msg; }
-  if (loadingEl) loadingEl.classList.add('hide');
-}
-
-if (!stage) {
-  // 不在 3D 页面，直接退出
-} else {
-
+if (stage) {
+  /* ---------- 基础设施 ---------- */
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -37,13 +31,11 @@ if (!stage) {
   controls.autoRotate = true;
   controls.autoRotateSpeed = 1.1;
 
-  // 灯光：亮色场景，柔和为主
   scene.add(new THREE.HemisphereLight(0xffffff, 0xbcd0e6, 1.05));
-  const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(80, 120, 70); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xcfe2ff, 0.85); fill.position.set(-90, 40, -60); scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xffe9cc, 1.0); rim.position.set(-20, 60, 120); scene.add(rim);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.0); keyLight.position.set(80, 120, 70); scene.add(keyLight);
+  const fillLight = new THREE.DirectionalLight(0xcfe2ff, 0.85); fillLight.position.set(-90, 40, -60); scene.add(fillLight);
+  const rimLight = new THREE.DirectionalLight(0xffe9cc, 1.0); rimLight.position.set(-20, 60, 120); scene.add(rimLight);
 
-  // 软阴影贴图（用 canvas 生成，零外部依赖）
   function shadowTexture() {
     const c = document.createElement('canvas');
     c.width = c.height = 256;
@@ -59,16 +51,56 @@ if (!stage) {
     return t;
   }
 
-  let model = null;
-  let wireMeshes = [];
-  let wireOn = false;
-
   function resize() {
     const w = Math.max(1, stage.clientWidth);
     const h = Math.max(1, stage.clientHeight);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+  }
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage);
+  window.addEventListener('resize', resize);
+
+  /* ---------- 模型状态 ---------- */
+  const loader = new GLTFLoader();
+  let model = null;
+  let shadow = null;
+  let wireMeshes = [];
+  let wireOn = false;
+  let loadSeq = 0;
+
+  function disposeCurrent() {
+    if (shadow) {
+      scene.remove(shadow);
+      if (shadow.geometry) shadow.geometry.dispose();
+      if (shadow.material) {
+        if (shadow.material.map) shadow.material.map.dispose();
+        shadow.material.dispose();
+      }
+      shadow = null;
+    }
+    if (model) {
+      scene.remove(model);
+      model.traverse((o) => {
+        if (!o.isMesh) return;
+        if (o.geometry) o.geometry.dispose();
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach((m) => {
+          if (!m) return;
+          Object.keys(m).forEach((k) => {
+            const v = m[k];
+            if (v && v.isTexture) v.dispose();
+          });
+          m.dispose();
+        });
+      });
+      model = null;
+    }
+    wireMeshes = [];
+    wireOn = false;
+    const bw = document.getElementById('btnWire');
+    if (bw) bw.classList.remove('on');
   }
 
   function fitCamera() {
@@ -98,57 +130,91 @@ if (!stage) {
     return Math.round(n);
   }
 
-  resize();
-  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage);
-  window.addEventListener('resize', resize);
+  function setTitle(title, sub) {
+    if (titleEl && title) titleEl.textContent = title;
+    if (subEl && sub) subEl.textContent = sub;
+    if (hudTitleEl && title) hudTitleEl.textContent = '🏛️ ' + title;
+    if (title) document.title = '3D 云游 · ' + title + ' | 云旅游';
+  }
 
-  new GLTFLoader().load(
-    MODEL_URL,
-    (gltf) => {
-      if (loadingEl) loadingEl.classList.add('hide');
-      try {
-        model = gltf.scene;
+  function loadModel(url, title) {
+    const seq = ++loadSeq;
+    disposeCurrent();
+    if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+    if (loadingEl) {
+      loadingEl.textContent = '正在加载 3D 模型…';
+      loadingEl.classList.remove('hide');
+    }
+    if (metaEl) metaEl.innerHTML = '';
 
-        // 居中 + 落地
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        model.position.sub(center);
-        scene.add(model);
-        const box2 = new THREE.Box3().setFromObject(model);
-        model.position.y -= box2.min.y;
+    loader.load(
+      url,
+      (gltf) => {
+        if (seq !== loadSeq) return;      // 已被更新的切换取代
+        if (loadingEl) loadingEl.classList.add('hide');
+        try {
+          model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          model.position.sub(center);      // 居中
+          scene.add(model);
+          const box2 = new THREE.Box3().setFromObject(model);
+          model.position.y -= box2.min.y;  // 落地
 
-        model.traverse((o) => { if (o.isMesh) wireMeshes.push(o); });
+          model.traverse((o) => { if (o.isMesh) wireMeshes.push(o); });
+          const size = fitCamera();
 
-        const size = fitCamera();
+          shadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(size.x * 2.1, size.z * 2.1),
+            new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false })
+          );
+          shadow.rotation.x = -Math.PI / 2;
+          shadow.position.y = 0.02;
+          scene.add(shadow);
 
-        // 软阴影
-        const shadow = new THREE.Mesh(
-          new THREE.PlaneGeometry(size.x * 2.1, size.z * 2.1),
-          new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false })
-        );
-        shadow.rotation.x = -Math.PI / 2;
-        shadow.position.y = 0.02;
-        scene.add(shadow);
-
-        if (metaEl) {
-          metaEl.innerHTML =
-            '尺寸 ' + size.x.toFixed(1) + ' × ' + size.y.toFixed(1) + ' × ' + size.z.toFixed(1) +
-            '<br>三角面 ' + countTris().toLocaleString();
+          if (metaEl) {
+            metaEl.innerHTML =
+              '尺寸 ' + size.x.toFixed(1) + ' × ' + size.y.toFixed(1) + ' × ' + size.z.toFixed(1) +
+              '<br>三角面 ' + countTris().toLocaleString();
+          }
+        } catch (e) {
+          console.error(e);
+          if (errEl) { errEl.style.display = 'flex'; errEl.textContent = '模型解析出错：' + e.message; }
         }
-      } catch (e) {
-        console.error(e);
-        fail('模型解析出错：' + e.message);
+      },
+      (xhr) => {
+        if (seq !== loadSeq) return;
+        if (loadingEl && xhr.total) {
+          loadingEl.textContent = '正在加载 3D 模型… ' + Math.round((xhr.loaded / xhr.total) * 100) + '%';
+        }
+      },
+      (e) => {
+        if (seq !== loadSeq) return;
+        if (errEl) {
+          errEl.style.display = 'flex';
+          errEl.textContent = '加载失败：' + (e && e.message ? e.message : e) +
+            '\n\n请通过本地服务器访问（http://…），不要用 file:// 直接打开。';
+        }
+        if (loadingEl) loadingEl.classList.add('hide');
       }
-    },
-    (xhr) => {
-      if (loadingEl && xhr.total) {
-        loadingEl.textContent = '正在加载 3D 模型… ' + Math.round(xhr.loaded / xhr.total * 100) + '%';
-      }
-    },
-    (e) => fail('加载失败：' + (e && e.message ? e.message : e) +
-      '\n\n请通过本地服务器访问（http://…），不要用 file:// 直接打开。')
-  );
+    );
+  }
 
+  /* ---------- 标签切换 ---------- */
+  const tabs = Array.prototype.slice.call(document.querySelectorAll('.vtab'));
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      if (tab.classList.contains('active')) return;
+      tabs.forEach((t) => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      setTitle(tab.dataset.title, tab.dataset.sub);
+      loadModel(tab.dataset.model, tab.dataset.title);
+    });
+  });
+
+  /* ---------- 控件 ---------- */
   const btnRotate = document.getElementById('btnRotate');
   if (btnRotate) btnRotate.onclick = () => {
     controls.autoRotate = !controls.autoRotate;
@@ -164,6 +230,11 @@ if (!stage) {
 
   const btnReset = document.getElementById('btnReset');
   if (btnReset) btnReset.onclick = fitCamera;
+
+  /* ---------- 启动 ---------- */
+  const first = tabs.find((t) => t.classList.contains('active')) || tabs[0];
+  const firstUrl = first ? first.dataset.model : 'assets/models/temple_of_heaven.glb';
+  loadModel(firstUrl, first ? first.dataset.title : null);
 
   renderer.setAnimationLoop(() => {
     controls.update();

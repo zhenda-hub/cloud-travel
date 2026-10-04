@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>3D 云游 · 天坛祈年殿 | 云旅游</title>
-<meta name="description" content="在浏览器里 360° 旋转查看天坛祈年殿 3D 模型 —— 云旅游 3D 云游。" />
+<title>3D 云游 · 天坛祈年殿 · 日月潭 | 云旅游</title>
+<meta name="description" content="在浏览器里 360° 旋转查看 3D 模型 —— 天坛祈年殿、日月潭。云旅游 3D 云游。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M9 22a5 5 0 1 1 1.2-9.9A6.5 6.5 0 0 1 23 14.5 4.5 4.5 0 0 1 22.5 23H9z' fill='%236cb6ff'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="css/viewer.css" />
@@ -35,17 +35,28 @@
 <main class="vmain">
   <section class="vhead wrap">
     <p class="eyebrow">3D CLOUD TOUR</p>
-    <h1>天坛祈年殿</h1>
-    <p class="sub">中国现存最大的古代祭祀性建筑群之一。拖动鼠标，绕着三重檐走一圈。</p>
+    <h1 id="modelTitle">天坛祈年殿</h1>
+    <p class="sub" id="modelSub">中国现存最大的古代祭祀性建筑群之一。拖动鼠标，绕着三重檐走一圈。</p>
   </section>
 
   <section class="wrap">
+    <div class="vswitch" role="tablist" aria-label="选择模型">
+      <button class="vtab active" role="tab" aria-selected="true"
+              data-model="assets/models/temple_of_heaven.glb"
+              data-title="天坛祈年殿"
+              data-sub="中国现存最大的古代祭祀性建筑群之一。拖动鼠标，绕着三重檐走一圈。">天坛祈年殿</button>
+      <button class="vtab" role="tab" aria-selected="false"
+              data-model="assets/models/sun-moon-lake.glb"
+              data-title="日月潭"
+              data-sub="台湾最大的天然湖泊，潭中拉鲁岛将湖面分成日潭与月潭。这是一版地形沙盘模型。">日月潭</button>
+    </div>
+
     <div class="stage" id="stage">
       <div id="loading" class="vloading">正在加载 3D 模型…</div>
       <div id="err" class="verr"></div>
 
       <div class="vhud">
-        <div class="vhud-title">🏛️ 天坛祈年殿</div>
+        <div class="vhud-title" id="hudTitle">🏛️ 天坛祈年殿</div>
         <div class="vhud-row"><b>左键拖动</b> · 旋转</div>
         <div class="vhud-row"><b>滚轮</b> · 缩放</div>
         <div class="vhud-row"><b>右键拖动</b> · 平移</div>
@@ -61,12 +72,12 @@
 
     <div class="vnotes">
       <div class="note">
-        <h3>关于这个模型</h3>
-        <p>祈年殿是北京天坛的主体建筑，三重檐圆形攒尖顶、深蓝琉璃瓦、金顶，殿高约 38 米。此处的 3D 模型由 AI 从文字描述生成，几何与材质为算法还原，仅供演示参考。</p>
+        <h3>关于这些模型</h3>
+        <p>站内 3D 模型均由 AI 依据文字描述或照片生成，几何与材质为算法还原。天坛祈年殿为单体建筑；日月潭为地形沙盘。仅供演示参考，不作为测绘依据。</p>
       </div>
       <div class="note">
         <h3>技术说明</h3>
-        <p>模型为 glTF（GLB）格式，用 three.js 在浏览器本地渲染，<b>three.js 已随站点内置</b>，不依赖任何 CDN，断网也能看。</p>
+        <p>模型为 glTF（GLB）格式，用 three.js 在浏览器本地渲染，<b>three.js 已随站点内置</b>，不依赖任何 CDN，断网也能看。切换上方标签即可换模型。</p>
       </div>
     </div>
   </section>

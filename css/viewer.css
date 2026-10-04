@@ -12,6 +12,26 @@
 }
 .vhead .sub { margin-top: 14px; color: var(--muted); font-size: 17px; }
 
+/* ===== 模型切换标签 ===== */
+.vswitch {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+  margin: 0 auto 18px; width: fit-content;
+  background: rgba(255,255,255,.72);
+  border-radius: 999px; padding: 5px;
+  box-shadow: inset 0 0 0 1px rgba(20,50,90,.08);
+  backdrop-filter: blur(8px);
+}
+.vtab {
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-2);
+  padding: 9px 20px; border-radius: 999px; transition: all .18s;
+}
+.vtab:hover { color: var(--blue-deep); }
+.vtab.active {
+  background: var(--blue); color: #fff;
+  box-shadow: 0 6px 16px -8px rgba(47,124,246,.8);
+}
+
 /* ===== 3D 舞台 ===== */
 .stage {
   position: relative;
