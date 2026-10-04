@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3D 云游 · 天坛祈年殿 | 云旅游</title>
+<meta name="description" content="在浏览器里 360° 旋转查看天坛祈年殿 3D 模型 —— 云旅游 3D 云游。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M9 22a5 5 0 1 1 1.2-9.9A6.5 6.5 0 0 1 23 14.5 4.5 4.5 0 0 1 22.5 23H9z' fill='%236cb6ff'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/viewer.css" />
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <span class="cloud c1"></span>
+  <span class="cloud c2"></span>
+  <span class="cloud c3"></span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+      <path d="M9 22a5 5 0 1 1 1.2-9.9A6.5 6.5 0 0 1 23 14.5 4.5 4.5 0 0 1 22.5 23H9z" fill="currentColor"/>
+    </svg>
+    <span>云旅游</span>
+  </a>
+  <nav class="links">
+    <a href="index.html#destinations">目的地</a>
+    <a href="index.html#routes">主题路线</a>
+    <a href="3d.html" class="active">3D 云游</a>
+  </nav>
+  <a class="btn btn-sm" href="index.html">返回首页</a>
+</header>
+
+<main class="vmain">
+  <section class="vhead wrap">
+    <p class="eyebrow">3D CLOUD TOUR</p>
+    <h1>天坛祈年殿</h1>
+    <p class="sub">中国现存最大的古代祭祀性建筑群之一。拖动鼠标，绕着三重檐走一圈。</p>
+  </section>
+
+  <section class="wrap">
+    <div class="stage" id="stage">
+      <div id="loading" class="vloading">正在加载 3D 模型…</div>
+      <div id="err" class="verr"></div>
+
+      <div class="vhud">
+        <div class="vhud-title">🏛️ 天坛祈年殿</div>
+        <div class="vhud-row"><b>左键拖动</b> · 旋转</div>
+        <div class="vhud-row"><b>滚轮</b> · 缩放</div>
+        <div class="vhud-row"><b>右键拖动</b> · 平移</div>
+        <div class="vhud-meta" id="meta"></div>
+      </div>
+
+      <div class="vctrl">
+        <button id="btnRotate" class="on">自动旋转</button>
+        <button id="btnWire">线框</button>
+        <button id="btnReset">重置视角</button>
+      </div>
+    </div>
+
+    <div class="vnotes">
+      <div class="note">
+        <h3>关于这个模型</h3>
+        <p>祈年殿是北京天坛的主体建筑，三重檐圆形攒尖顶、深蓝琉璃瓦、金顶，殿高约 38 米。此处的 3D 模型由 AI 从文字描述生成，几何与材质为算法还原，仅供演示参考。</p>
+      </div>
+      <div class="note">
+        <h3>技术说明</h3>
+        <p>模型为 glTF（GLB）格式，用 three.js 在浏览器本地渲染，<b>three.js 已随站点内置</b>，不依赖任何 CDN，断网也能看。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
+        <path d="M9 22a5 5 0 1 1 1.2-9.9A6.5 6.5 0 0 1 23 14.5 4.5 4.5 0 0 1 22.5 23H9z" fill="currentColor"/>
+      </svg>
+      <span>云旅游 · Cloud Travel</span>
+    </div>
+    <p class="muted">纯静态演示站点 · 内容为示例，出行请以实际情况为准</p>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three/three.module.js",
+    "three/addons/": "./assets/vendor/three/addons/"
+  }
+}
+</script>
+<script type="module" src="js/viewer.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
